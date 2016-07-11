@@ -1,0 +1,170 @@
+// ConsoleApplication1.cpp : Defines the entry point for the console application.
+//
+
+#include "stdafx.h"
+#include <iostream>
+#include <string>
+#include <cstdlib>
+#include <random>
+
+void printGrid(std::string grid[]);
+bool placeX(int position, std::string grid[], std::string xOrO);
+bool checkForVictor(std::string grid[], std::string charToCheck);
+void populateGrid(int count, std::string grid[]);
+void printSpaces(std::string bottomChar);
+void clear();
+void takeComputerTurn(std::string grid[]);
+
+const int ROW_COUNT = 10;
+
+int main()
+{
+	int userInput;
+	std::string grid[ROW_COUNT*ROW_COUNT];
+
+	populateGrid(ROW_COUNT*ROW_COUNT, grid);
+	
+	for (;;)
+	{
+		printGrid(grid);
+
+		std::cout << "Choose the position to place your X: ";
+
+		std::cin >> userInput;
+
+		if (placeX(userInput-1, grid, "X"))
+			takeComputerTurn(grid);
+	}
+
+    return 0;
+}
+
+void printGrid(std::string grid[])
+{
+	clear();
+	for (int i = 0; i < ROW_COUNT; i++)
+	{
+		printSpaces(" ");
+		std::cout << "\n|";
+
+		for (int j = i*ROW_COUNT; j < (i+1)*ROW_COUNT; j++)
+		{
+			if(grid[j].length() < 2)
+				std::cout << "   " << grid[j] << "   ";
+			else
+				std::cout << "  " << grid[j] << "   ";
+			std::cout << "|";
+		}
+		std::cout << "\n";
+		printSpaces("_");
+		std::cout << "\n";
+	}
+}
+
+void printSpaces(std::string bottomChar)
+{
+	for (int i = 0; i <ROW_COUNT; i++)
+	{
+		std::cout << "|";
+		for (int j = 0; j < 7; j++)
+			std::cout << bottomChar;
+	}
+	std::cout << "|";
+}
+
+bool placeX(int position, std::string grid[], std::string xOrO)
+{
+	bool placed = false;
+	int buff;
+	
+	if (grid[position] != "X" & grid[position] != "O")
+	{
+		grid[position] = xOrO;
+		placed = true;
+	}
+
+	if (checkForVictor(grid, xOrO))
+	{
+		printGrid(grid);
+		std::cout << "!!!" << xOrO << " WINS!!!\nPress any key to play again";
+		std::cin.ignore();
+		std::cin.ignore();
+		populateGrid(ROW_COUNT*ROW_COUNT, grid);
+		placed = false;
+	}
+
+	return placed;
+}
+
+void takeComputerTurn(std::string grid[])
+{
+	int computerPosition = rand()%9;
+
+	while (!placeX(computerPosition, grid, "O"))
+		computerPosition = rand() % ROW_COUNT*ROW_COUNT;
+
+}
+
+bool checkForVictor(std::string grid[], std::string charToCheck)
+{
+	
+	for (int i = 0; i < ROW_COUNT; i++)
+	{
+		//check vertical
+		for (int j = i; j <= ROW_COUNT*(ROW_COUNT - 1) + i; j+= ROW_COUNT)
+		{
+			if (grid[j] != charToCheck)
+				break;
+			else if (j == ROW_COUNT*(ROW_COUNT-1) + i & grid[j] == charToCheck)
+				return true;
+		}
+
+		//check horizontal
+		for (int j = i*ROW_COUNT; j <= i*ROW_COUNT + ROW_COUNT - 1; j++)
+		{
+			if (grid[j] != charToCheck)
+				break;
+			else if(j == i*ROW_COUNT + ROW_COUNT - 1 & grid[j] == charToCheck)
+				return true;
+		}
+
+		//check diagonal
+		if (i == 0)
+		{
+			for (int j = 0; j < ROW_COUNT^2; j+=ROW_COUNT+1)
+			{
+				if (grid[j] != charToCheck)
+					break;
+				else if (j == ROW_COUNT*ROW_COUNT - 1 & grid[j] == charToCheck)
+					return true;
+			}
+		}
+
+		if (i == 2)
+		{
+			for (int j = 2; j < ROW_COUNT ^ 2; j += (ROW_COUNT-1))
+			{
+				if (grid[j] != charToCheck)
+					break;
+				else if (j == ROW_COUNT*2 & grid[j] == charToCheck)
+					return true;
+			}
+		}
+
+	}
+
+
+	return false;
+}
+
+void populateGrid(int count, std::string grid[])
+{
+	for (int i = 0; i < count; i++)
+	{
+		grid[i] = std::to_string(i+1);
+	}
+}
+
+void clear() {
+	std::system("cls");
+}
