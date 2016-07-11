@@ -1,5 +1,10 @@
-// ConsoleApplication1.cpp : Defines the entry point for the console application.
-//
+/*#######################################################
+#TicTacMain:
+# A scalable Tic Tac Toe game with really stupid AI
+#
+# Change ROW_COUNT to change the size of the grid
+#
+#########################################################*/
 
 #include "stdafx.h"
 #include <iostream>
@@ -7,6 +12,7 @@
 #include <cstdlib>
 #include <random>
 
+//Function Identifiers
 void printGrid(std::string grid[]);
 bool placeX(int position, std::string grid[], std::string xOrO);
 bool checkForVictor(std::string grid[], std::string charToCheck);
@@ -15,54 +21,82 @@ void printSpaces(std::string bottomChar);
 void clear();
 void takeComputerTurn(std::string grid[]);
 
+//Constant definition for the number of Rows/columns
 const int ROW_COUNT = 10;
 
+//Main operation of the program
 int main()
 {
+	//Storage for the user input position
 	int userInput;
+	
+	//Create the array to store the grid values
 	std::string grid[ROW_COUNT*ROW_COUNT];
 
+	//Fill in the initial numbers in the grid
 	populateGrid(ROW_COUNT*ROW_COUNT, grid);
 	
+	//Loop to continuously prompt user 
 	for (;;)
 	{
+		//reprint the grid at the beginning of each loop
 		printGrid(grid);
 
+		//Prompt the user to choose a position
 		std::cout << "Choose the position to place your X: ";
-
+		
+		Read the user's input selection when the hit enter
 		std::cin >> userInput;
 
+		//Use the intput to place an X on the grid (subtract 1 so that it matches the array 0-base index)
 		if (placeX(userInput-1, grid, "X"))
-			takeComputerTurn(grid);
+			takeComputerTurn(grid); //If the user had a successful turn, let the computer move
 	}
 
     return 0;
 }
 
+//Function to print the grid to the screen
 void printGrid(std::string grid[])
 {
+	//Call clear to reset the command window
 	clear();
+	
+	//Loop to print all grid sections
 	for (int i = 0; i < ROW_COUNT; i++)
 	{
+		//Print the correct amount of grid spaces
 		printSpaces(" ");
+		
+		//Print a new line
 		std::cout << "\n|";
 
+		//Loop to print all grid values by row
 		for (int j = i*ROW_COUNT; j < (i+1)*ROW_COUNT; j++)
 		{
+			//Print the correct number of spaces based on the length of the value
 			if(grid[j].length() < 2)
 				std::cout << "   " << grid[j] << "   ";
 			else
 				std::cout << "  " << grid[j] << "   ";
 			std::cout << "|";
 		}
+		
+		//Print a new line
 		std::cout << "\n";
+		
+		//Print the correct amount of bottom spaces
 		printSpaces("_");
+		
+		//Print a new line
 		std::cout << "\n";
 	}
 }
 
+//Function is used to print the correct number of grid spaces based on the ROW_COUNT constant
 void printSpaces(std::string bottomChar)
 {
+	//Loop to print spaces
 	for (int i = 0; i <ROW_COUNT; i++)
 	{
 		std::cout << "|";
